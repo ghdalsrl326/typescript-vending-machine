@@ -22,6 +22,8 @@ export class DispensingState implements State {
   dispenseDrink = async (): Promise<void> => {
     const selectedDrink = this.vendingMachine.getSelectedDrink();
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     if (!selectedDrink) {
       Logger.error("선택된 음료가 없습니다.");
       this.vendingMachine.setState(

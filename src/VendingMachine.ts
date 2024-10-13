@@ -3,7 +3,6 @@ import { Drink } from "./models/Drink";
 import { Payment, PaymentMethod } from "./models/Payment";
 import { State } from "./states/State";
 import { WaitingState } from "./states/WaitingState";
-import { Logger } from "./utils/Logger";
 
 export class VendingMachine {
   private drinks: Drink[];
@@ -23,7 +22,7 @@ export class VendingMachine {
     ];
     this.state = new WaitingState(this);
     this.availableChange = 50000; // 초기 거스름돈 설정
-    this.cashSlotWorking = false; // 초기 현금 투입구 상태
+    this.cashSlotWorking = true; // 초기 현금 투입구 상태
 
     this.rl = readline.createInterface({
       input: process.stdin,

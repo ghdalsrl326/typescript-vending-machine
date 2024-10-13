@@ -3,9 +3,20 @@ export class MoneyHandler {
   private static readonly VALID_BILLS = [1000, 5000, 10000];
 
   static isValidCurrency = (amount: number): boolean => {
-    return (
-      this.VALID_COINS.includes(amount) || this.VALID_BILLS.includes(amount)
-    );
+    const validDenominations = [...this.VALID_COINS, ...this.VALID_BILLS];
+    const dp = Array(amount + 1).fill(false);
+    dp[0] = true;
+
+    for (let i = 1; i <= amount; i++) {
+      for (const denom of validDenominations) {
+        if (i >= denom && dp[i - denom]) {
+          dp[i] = true;
+          break;
+        }
+      }
+    }
+
+    return dp[amount];
   };
 
   static calculateChange = (totalAmount: number, price: number): number => {
