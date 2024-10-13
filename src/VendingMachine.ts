@@ -11,18 +11,28 @@ export class VendingMachine {
   private payment: Payment | null = null;
   private availableChange: number;
   private cashSlotWorking: boolean;
+  private cashInventory: Map<number, number>;
 
   rl: readline.Interface;
 
   constructor() {
     this.drinks = [
       new Drink("콜라", 1500, 10),
-      new Drink("물", 1000, 20),
+      new Drink("물", 1000, 2),
       new Drink("커피", 2000, 15),
     ];
     this.state = new WaitingState(this);
-    this.availableChange = 0; // 초기 거스름돈 설정
+    this.availableChange = 500; // 초기 거스름돈 설정
     this.cashSlotWorking = true; // 초기 현금 투입구 상태
+    this.cashInventory = new Map([
+      [10, 0], // 현금 단위, 개수
+      [50, 0],
+      [100, 0],
+      [500, 0],
+      [1000, 30],
+      [5000, 20],
+      [10000, 10],
+    ]);
 
     this.rl = readline.createInterface({
       input: process.stdin,
@@ -103,4 +113,13 @@ export class VendingMachine {
   setCashSlotWorking = (isWorking: boolean): void => {
     this.cashSlotWorking = isWorking;
   };
+
+  getCashInventory(): Map<number, number> {
+    return new Map(this.cashInventory);
+  }
+
+  updateCashInventory(denomination: number, count: number): void {
+    const currentCount = this.cashInventory.get(denomination) || 0;
+    this.cashInventory.set(denomination, currentCount + count);
+  }
 }

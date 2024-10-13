@@ -1,3 +1,5 @@
+import { VendingMachine } from "../VendingMachine";
+
 export class MoneyHandler {
   private static readonly VALID_COINS = [100, 500];
   private static readonly VALID_BILLS = [1000, 5000, 10000];
@@ -19,14 +21,50 @@ export class MoneyHandler {
     return dp[amount];
   };
 
-  static calculateChange = (totalAmount: number, price: number): number => {
-    return totalAmount - price;
-  };
-
   static hasEnoughChange = (
     changeAmount: number,
     availableChange: number
   ): boolean => {
     return availableChange >= changeAmount;
   };
+
+  static calculateChange(
+    totalAmount: number,
+    price: number,
+    cashInventory: Map<number, number>
+  ): Map<number, number> | null {
+    let changeAmount = totalAmount - price;
+    const change = new Map<number, number>();
+    const denominations = [...cashInventory.keys()].sort((a, b) => b - a);
+
+    for (const denomination of denominations) {
+      const availableCount = cashInventory.get(denomination) || 0;
+      const count = Math.min(
+        Math.floor(changeAmount / denomination),
+        availableCount
+      );
+
+      if (count > 0) {
+        change.set(denomination, count);
+        changeAmount -= denomination * count;
+      }
+
+      if (changeAmount === 0) break;
+    }
+
+    return changeAmount === 0 ? change : null;
+  }
+
+  static updateCashInventory(
+    vendingMachine: VendingMachine,
+    change: Map<number, number>,
+    isReturn: boolean
+  ): void {
+    for (const [denomination, count] of change.entries()) {
+      vendingMachine.updateCashInventory(
+        denomination,
+        isReturn ? -count : count
+      );
+    }
+  }
 }

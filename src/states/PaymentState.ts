@@ -80,7 +80,7 @@ export class PaymentState implements State {
       }
       totalAmount += amount;
       console.log(`현재 투입 금액: ${totalAmount}원`);
-      this.vendingMachine.updateAvailableChange(amount); // 투입된 금액만큼 잔돈 증가
+      this.vendingMachine.updateCashInventory(amount, 1); // 투입된 금액 추가
       this.retryCount = 0; // 성공적인 투입 후 재시도 횟수 리셋
     }
     if (this.retryCount >= this.maxRetries) {
@@ -93,15 +93,11 @@ export class PaymentState implements State {
     }
     const change = MoneyHandler.calculateChange(
       totalAmount,
-      selectedDrink.price
+      selectedDrink.price,
+      this.vendingMachine.getCashInventory()
     );
-    if (
-      !MoneyHandler.hasEnoughChange(
-        change,
-        this.vendingMachine.getAvailableChange()
-      )
-    ) {
-      Logger.log("거스름돈이 부족합니다. 카드 결제를 이용해주세요.");
+    if (!change) {
+      Logger.log("거스름돈을 줄 수 없습니다. 카드 결제를 이용해주세요.");
       await this.cancelCashPayment(totalAmount);
       return;
     }
@@ -151,7 +147,17 @@ export class PaymentState implements State {
 
   cancelCashPayment = async (amount: number): Promise<void> => {
     Logger.log(`${amount}원을 반환합니다.`);
-    this.vendingMachine.updateAvailableChange(-amount); // 반환된 금액만큼 잔돈 감소
+    const returnCash = MoneyHandler.calculateChange(
+      amount,
+      0,
+      this.vendingMachine.getCashInventory()
+    );
+    if (returnCash) {
+      MoneyHandler.updateCashInventory(this.vendingMachine, returnCash, true);
+      Logger.log("금액이 반환되었습니다.");
+    } else {
+      Logger.error("금액 반환에 실패했습니다. 관리자에게 문의해주세요.");
+    }
     this.vendingMachine.setState(new WaitingState(this.vendingMachine));
   };
 

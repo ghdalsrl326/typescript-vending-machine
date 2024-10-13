@@ -1,3 +1,4 @@
+// [Deprecated]State 별로 TimeOut을 설정을 고려
 export class Timer {
   private timeoutId: NodeJS.Timeout | null = null;
 

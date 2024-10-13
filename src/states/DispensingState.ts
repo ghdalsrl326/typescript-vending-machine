@@ -36,10 +36,11 @@ export class DispensingState implements State {
       if (this.vendingMachine.getPaymentMethod() === PaymentMethod.CASH) {
         const change = MoneyHandler.calculateChange(
           this.vendingMachine.getPaymentAmount(),
-          selectedDrink.price
+          selectedDrink.price,
+          this.vendingMachine.getCashInventory()
         );
 
-        if (change > 0) {
+        if (change) {
           const changeReturned = await this.returnChange(change);
           if (!changeReturned) {
             Logger.error("거스름돈 반환에 실패했습니다.");
@@ -53,6 +54,7 @@ export class DispensingState implements State {
 
       selectedDrink.decreaseStock();
       Logger.log(`${selectedDrink.name}이(가) 제공되었습니다.`);
+      console.log(`남은 재고: ${selectedDrink.stock}개`);
 
       this.vendingMachine.resetPayment();
       this.vendingMachine.setState(new WaitingState(this.vendingMachine));
@@ -64,12 +66,18 @@ export class DispensingState implements State {
     }
   };
 
-  returnChange = async (amount: number): Promise<boolean> => {
-    Logger.log(`${amount}원의 거스름돈을 반환합니다.`);
-    this.vendingMachine.updateAvailableChange(-amount); // 반환된 거스름돈만큼 잔돈 감소
-    console.log(`현재 잔돈: ${this.vendingMachine.getAvailableChange()}원`);
-
+  returnChange = async (change: Map<number, number>): Promise<boolean> => {
+    let totalChange = 0;
+    for (const [denomination, count] of change.entries()) {
+      totalChange += denomination * count;
+    }
+    Logger.log(`${totalChange}원의 거스름돈을 반환합니다.`);
+    MoneyHandler.updateCashInventory(this.vendingMachine, change, true);
+    console.log("거스름돈 내역:");
+    for (const [denomination, count] of change.entries()) {
+      console.log(`${denomination}원: ${count}개`);
+    }
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return true; // 실제 구현에서는 반환 성공 여부를 확인해야 합니다.
+    return true;
   };
 }
