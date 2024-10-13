@@ -10,7 +10,6 @@ export class VendingMachine {
   private state: State;
   private selectedDrink: Drink | null = null;
   private payment: Payment | null = null;
-  private availableChange: number;
   private cashSlotWorking: boolean;
   private cashInventory: Map<number, number>;
 
@@ -18,21 +17,18 @@ export class VendingMachine {
 
   constructor() {
     this.drinks = [
-      new Drink("콜라", 1500, 10),
-      new Drink("물", 1000, 2),
-      new Drink("커피", 2000, 15),
+      new Drink("콜라", 1100, 10),
+      new Drink("물", 600, 1),
+      new Drink("커피", 700, 15),
     ];
     this.state = new WaitingState(this);
-    this.availableChange = 500; // 초기 거스름돈 설정
     this.cashSlotWorking = true; // 초기 현금 투입구 상태
     this.cashInventory = new Map([
-      [10, 0], // 현금 단위, 개수
-      [50, 0],
-      [100, 0],
-      [500, 0],
-      [1000, 0],
-      [5000, 0],
-      [10000, 10],
+      [100, 50], // 현금 단위, 개수
+      [500, 50],
+      [1000, 50],
+      [5000, 50],
+      [10000, 50],
     ]);
 
     this.rl = readline.createInterface({
@@ -59,7 +55,7 @@ export class VendingMachine {
   };
 
   displayAvailableDrinks = (): void => {
-    Logger.log("사용 가능한 음료:");
+    Logger.log("구입 가능한 음료:");
     this.drinks.forEach((drink, index) => {
       if (drink.isAvailable()) {
         Logger.log(`${drink.name} - ${drink.price}원`);
@@ -99,13 +95,13 @@ export class VendingMachine {
     this.payment = null;
   };
 
-  getAvailableChange = (): number => {
-    return this.availableChange;
-  };
+  //   getAvailableChange = (): number => {
+  //     return this.availableChange;
+  //   };
 
-  updateAvailableChange = (amount: number): void => {
-    this.availableChange += amount;
-  };
+  //   updateAvailableChange = (amount: number): void => {
+  //     this.availableChange += amount;
+  //   };
 
   isCashSlotWorking = (): boolean => {
     return this.cashSlotWorking;

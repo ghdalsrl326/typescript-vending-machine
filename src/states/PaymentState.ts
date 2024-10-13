@@ -14,7 +14,7 @@ export class PaymentState implements State {
 
   displayOptions = (): void => {
     Logger.log("===== 결제 방법 선택 =====");
-    if (this.vendingMachine.getAvailableChange() > 0) {
+    if (this.hasSufficientChange()) {
       Logger.log("1. 현금");
     }
     Logger.log("2. 카드");
@@ -29,7 +29,7 @@ export class PaymentState implements State {
 
     switch (input) {
       case "현금":
-        if (this.vendingMachine.getAvailableChange() > 0) {
+        if (this.hasSufficientChange()) {
           await this.handleCashPayment();
         } else {
           Logger.log(
@@ -44,6 +44,11 @@ export class PaymentState implements State {
         Logger.log("잘못된 입력입니다. (현금) 또는 (카드)를 선택하세요.");
     }
   };
+
+  private hasSufficientChange(): boolean {
+    const cashInventory = this.vendingMachine.getCashInventory();
+    return Array.from(cashInventory.values()).some((count) => count > 0);
+  }
 
   handleCashPayment = async (): Promise<void> => {
     const selectedDrink = this.vendingMachine.getSelectedDrink();

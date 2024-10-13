@@ -3,7 +3,7 @@ import { VendingMachine } from "../VendingMachine";
 export class MoneyHandler {
   private static readonly VALID_COINS = [100, 500];
   private static readonly VALID_BILLS = [1000, 5000, 10000];
-  static readonly VALID_DENOMINATIONS = [10, 50, 100, 500, 1000, 5000, 10000];
+  static readonly VALID_DENOMINATIONS = [100, 500, 1000, 5000, 10000];
 
   static parseInsertedMoney(input: string): Map<number, number> | null {
     const insertedMoney = new Map<number, number>();
@@ -49,13 +49,6 @@ export class MoneyHandler {
     }
 
     return dp[amount];
-  };
-
-  static hasEnoughChange = (
-    changeAmount: number,
-    availableChange: number
-  ): boolean => {
-    return availableChange >= changeAmount;
   };
 
   static calculateChange(
