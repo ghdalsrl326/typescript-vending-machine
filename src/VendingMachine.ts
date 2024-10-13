@@ -21,7 +21,7 @@ export class VendingMachine {
       new Drink("커피", 2000, 15),
     ];
     this.state = new WaitingState(this);
-    this.availableChange = 50000; // 초기 거스름돈 설정
+    this.availableChange = 0; // 초기 거스름돈 설정
     this.cashSlotWorking = true; // 초기 현금 투입구 상태
 
     this.rl = readline.createInterface({

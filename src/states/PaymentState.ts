@@ -14,7 +14,9 @@ export class PaymentState implements State {
 
   displayOptions = (): void => {
     console.log("===== 결제 방법 선택 =====");
-    console.log("1. 현금");
+    if (this.vendingMachine.getAvailableChange() > 0) {
+      console.log("1. 현금");
+    }
     console.log("2. 카드");
     console.log("취소하려면 '취소'를 입력하세요.");
   };
@@ -27,7 +29,13 @@ export class PaymentState implements State {
 
     switch (input) {
       case "현금":
-        await this.handleCashPayment();
+        if (this.vendingMachine.getAvailableChange() > 0) {
+          await this.handleCashPayment();
+        } else {
+          Logger.log(
+            "현재 현금 결제를 이용할 수 없습니다. 카드를 선택해주세요."
+          );
+        }
         break;
       case "카드":
         await this.handleCardPayment();
@@ -72,6 +80,7 @@ export class PaymentState implements State {
       }
       totalAmount += amount;
       console.log(`현재 투입 금액: ${totalAmount}원`);
+      this.vendingMachine.updateAvailableChange(amount); // 투입된 금액만큼 잔돈 증가
       this.retryCount = 0; // 성공적인 투입 후 재시도 횟수 리셋
     }
     if (this.retryCount >= this.maxRetries) {
@@ -96,6 +105,7 @@ export class PaymentState implements State {
       await this.cancelCashPayment(totalAmount);
       return;
     }
+
     this.vendingMachine.setPaymentMethod(PaymentMethod.CASH);
     this.vendingMachine.setPaymentAmount(totalAmount);
     this.vendingMachine.setState(new DispensingState(this.vendingMachine));
@@ -141,7 +151,7 @@ export class PaymentState implements State {
 
   cancelCashPayment = async (amount: number): Promise<void> => {
     Logger.log(`${amount}원을 반환합니다.`);
-    // 실제 환불 로직 구현
+    this.vendingMachine.updateAvailableChange(-amount); // 반환된 금액만큼 잔돈 감소
     this.vendingMachine.setState(new WaitingState(this.vendingMachine));
   };
 

@@ -33,9 +33,6 @@ export class DispensingState implements State {
     }
 
     try {
-      selectedDrink.decreaseStock();
-      Logger.log(`${selectedDrink.name}이(가) 제공되었습니다.`);
-
       if (this.vendingMachine.getPaymentMethod() === PaymentMethod.CASH) {
         const change = MoneyHandler.calculateChange(
           this.vendingMachine.getPaymentAmount(),
@@ -54,6 +51,9 @@ export class DispensingState implements State {
         }
       }
 
+      selectedDrink.decreaseStock();
+      Logger.log(`${selectedDrink.name}이(가) 제공되었습니다.`);
+
       this.vendingMachine.resetPayment();
       this.vendingMachine.setState(new WaitingState(this.vendingMachine));
     } catch (error) {
@@ -66,8 +66,9 @@ export class DispensingState implements State {
 
   returnChange = async (amount: number): Promise<boolean> => {
     Logger.log(`${amount}원의 거스름돈을 반환합니다.`);
-    // 실제 거스름돈 반환 로직을 구현해야 합니다.
-    // 여기서는 간단히 시뮬레이션만 수행합니다.
+    this.vendingMachine.updateAvailableChange(-amount); // 반환된 거스름돈만큼 잔돈 감소
+    console.log(`현재 잔돈: ${this.vendingMachine.getAvailableChange()}원`);
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return true; // 실제 구현에서는 반환 성공 여부를 확인해야 합니다.
   };
