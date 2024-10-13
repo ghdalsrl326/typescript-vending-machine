@@ -56,7 +56,9 @@ export class PaymentState implements State {
       Logger.log("현금 투입구에 문제가 있습니다. 카드 결제를 이용해주세요.");
       return;
     }
-    console.log("최대 투입 가능 금액은 10,000원입니다.");
+    console.log("입력 형식: '금액:개수, 금액:개수, ...' (예: 1000:1, 500:2)");
+    console.log("취소하려면 '취소'를 입력하세요.");
+
     let totalAmount = 0;
     while (
       totalAmount < selectedDrink.price &&
@@ -67,22 +69,32 @@ export class PaymentState implements State {
         await this.cancelCashPayment(totalAmount);
         return;
       }
-      const amount = parseInt(input);
-      if (isNaN(amount) || !MoneyHandler.isValidCurrency(amount)) {
-        Logger.log("유효하지 않은 화폐입니다. 다시 시도해주세요.");
+
+      const insertedMoney = MoneyHandler.parseInsertedMoney(input);
+      if (!insertedMoney) {
+        Logger.log("잘못된 입력 형식입니다. 다시 시도해주세요.");
         this.retryCount++;
         continue;
       }
-      if (totalAmount + amount > 10000) {
+
+      const insertedAmount = MoneyHandler.calculateTotalAmount(insertedMoney);
+      if (totalAmount + insertedAmount > 10000) {
         Logger.log("최대 투입 금액을 초과했습니다. 다시 시도해주세요.");
         this.retryCount++;
         continue;
       }
-      totalAmount += amount;
+
+      totalAmount += insertedAmount;
       console.log(`현재 투입 금액: ${totalAmount}원`);
-      this.vendingMachine.updateCashInventory(amount, 1); // 투입된 금액 추가
+
+      // 자판기 현금 재고 업데이트
+      insertedMoney.forEach((count, denomination) => {
+        this.vendingMachine.updateCashInventory(denomination, count);
+      });
+
       this.retryCount = 0; // 성공적인 투입 후 재시도 횟수 리셋
     }
+
     if (this.retryCount >= this.maxRetries) {
       Logger.log(
         "최대 재시도 횟수를 초과했습니다. 처음부터 다시 시작해주세요."
@@ -91,11 +103,13 @@ export class PaymentState implements State {
       this.vendingMachine.setState(new WaitingState(this.vendingMachine));
       return;
     }
+
     const change = MoneyHandler.calculateChange(
       totalAmount,
       selectedDrink.price,
       this.vendingMachine.getCashInventory()
     );
+
     if (!change) {
       Logger.log("거스름돈을 줄 수 없습니다. 카드 결제를 이용해주세요.");
       await this.cancelCashPayment(totalAmount);
@@ -155,6 +169,10 @@ export class PaymentState implements State {
     if (returnCash) {
       MoneyHandler.updateCashInventory(this.vendingMachine, returnCash, true);
       Logger.log("금액이 반환되었습니다.");
+      console.log("반환된 금액:");
+      returnCash.forEach((count, denomination) => {
+        console.log(`${denomination}원: ${count}개`);
+      });
     } else {
       Logger.error("금액 반환에 실패했습니다. 관리자에게 문의해주세요.");
     }

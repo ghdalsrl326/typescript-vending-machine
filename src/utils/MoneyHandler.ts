@@ -3,6 +3,36 @@ import { VendingMachine } from "../VendingMachine";
 export class MoneyHandler {
   private static readonly VALID_COINS = [100, 500];
   private static readonly VALID_BILLS = [1000, 5000, 10000];
+  static readonly VALID_DENOMINATIONS = [10, 50, 100, 500, 1000, 5000, 10000];
+
+  static parseInsertedMoney(input: string): Map<number, number> | null {
+    const insertedMoney = new Map<number, number>();
+    const parts = input.split(",").map((part) => part.trim());
+
+    for (const part of parts) {
+      const [denomination, count] = part.split(":").map(Number);
+      if (
+        !this.VALID_DENOMINATIONS.includes(denomination) ||
+        isNaN(count) ||
+        count <= 0
+      ) {
+        return null; // 잘못된 입력
+      }
+      insertedMoney.set(
+        denomination,
+        (insertedMoney.get(denomination) || 0) + count
+      );
+    }
+
+    return insertedMoney;
+  }
+
+  static calculateTotalAmount(money: Map<number, number>): number {
+    return Array.from(money.entries()).reduce(
+      (total, [denomination, count]) => total + denomination * count,
+      0
+    );
+  }
 
   static isValidCurrency = (amount: number): boolean => {
     const validDenominations = [...this.VALID_COINS, ...this.VALID_BILLS];
