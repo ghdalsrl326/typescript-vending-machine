@@ -15,9 +15,9 @@ export class PaymentState implements State {
   displayOptions = (): void => {
     Logger.log("===== 결제 방법 선택 =====");
     if (this.hasSufficientChange()) {
-      Logger.log("1. 현금");
+      Logger.log("현금");
     }
-    Logger.log("2. 카드");
+    Logger.log("카드");
     Logger.log("취소하려면 '취소'를 입력하세요.");
   };
 
