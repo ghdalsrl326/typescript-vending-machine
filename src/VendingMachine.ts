@@ -3,6 +3,7 @@ import { Drink } from "./models/Drink";
 import { Payment, PaymentMethod } from "./models/Payment";
 import { State } from "./states/State";
 import { WaitingState } from "./states/WaitingState";
+import { Logger } from "./utils/Logger";
 
 export class VendingMachine {
   private drinks: Drink[];
@@ -58,10 +59,10 @@ export class VendingMachine {
   };
 
   displayAvailableDrinks = (): void => {
-    console.log("사용 가능한 음료:");
+    Logger.log("사용 가능한 음료:");
     this.drinks.forEach((drink, index) => {
       if (drink.isAvailable()) {
-        console.log(`${drink.name} - ${drink.price}원`);
+        Logger.log(`${drink.name} - ${drink.price}원`);
       }
     });
   };

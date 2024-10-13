@@ -8,9 +8,9 @@ export class SelectDrinkState implements State {
   constructor(public vendingMachine: VendingMachine) {}
 
   displayOptions = (): void => {
-    console.log("===== 음료 선택 =====");
+    Logger.log("===== 음료 선택 =====");
     this.vendingMachine.displayAvailableDrinks();
-    console.log("취소하려면 '취소'를 입력하세요.");
+    Logger.log("취소하려면 '취소'를 입력하세요.");
   };
 
   handleUserInput = async (input: string): Promise<void> => {

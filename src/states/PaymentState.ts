@@ -13,12 +13,12 @@ export class PaymentState implements State {
   constructor(public vendingMachine: VendingMachine) {}
 
   displayOptions = (): void => {
-    console.log("===== 결제 방법 선택 =====");
+    Logger.log("===== 결제 방법 선택 =====");
     if (this.vendingMachine.getAvailableChange() > 0) {
-      console.log("1. 현금");
+      Logger.log("1. 현금");
     }
-    console.log("2. 카드");
-    console.log("취소하려면 '취소'를 입력하세요.");
+    Logger.log("2. 카드");
+    Logger.log("취소하려면 '취소'를 입력하세요.");
   };
 
   handleUserInput = async (input: string): Promise<void> => {
@@ -56,8 +56,8 @@ export class PaymentState implements State {
       Logger.log("현금 투입구에 문제가 있습니다. 카드 결제를 이용해주세요.");
       return;
     }
-    console.log("입력 형식: '금액:개수, 금액:개수, ...' (예: 1000:1, 500:2)");
-    console.log("취소하려면 '취소'를 입력하세요.");
+    Logger.log("입력 형식: '금액:개수, 금액:개수, ...' (예: 1000:1, 500:2)");
+    Logger.log("취소하려면 '취소'를 입력하세요.");
 
     let totalAmount = 0;
     while (
@@ -85,7 +85,7 @@ export class PaymentState implements State {
       }
 
       totalAmount += insertedAmount;
-      console.log(`현재 투입 금액: ${totalAmount}원`);
+      Logger.log(`현재 투입 금액: ${totalAmount}원`);
 
       // 자판기 현금 재고 업데이트
       insertedMoney.forEach((count, denomination) => {
@@ -169,9 +169,9 @@ export class PaymentState implements State {
     if (returnCash) {
       MoneyHandler.updateCashInventory(this.vendingMachine, returnCash, true);
       Logger.log("금액이 반환되었습니다.");
-      console.log("반환된 금액:");
+      Logger.log("반환된 금액:");
       returnCash.forEach((count, denomination) => {
-        console.log(`${denomination}원: ${count}개`);
+        Logger.log(`${denomination}원: ${count}개`);
       });
     } else {
       Logger.error("금액 반환에 실패했습니다. 관리자에게 문의해주세요.");

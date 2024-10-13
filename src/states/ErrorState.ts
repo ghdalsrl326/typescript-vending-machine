@@ -20,26 +20,26 @@ export class ErrorState implements State {
   ) {}
 
   displayOptions = (): void => {
-    console.log("===== 오류 발생 =====");
+    Logger.error("===== 오류 발생 =====");
     switch (this.errorType) {
       case ErrorType.MACHINE_ERROR:
-        console.log("자판기에 문제가 발생했습니다.");
+        Logger.error("자판기에 문제가 발생했습니다.");
         break;
       case ErrorType.COIN_JAM:
-        console.log("동전/지폐가 걸렸습니다.");
+        Logger.error("동전/지폐가 걸렸습니다.");
         break;
       case ErrorType.DISPENSE_FAILURE:
-        console.log("상품 제공에 실패했습니다.");
+        Logger.error("상품 제공에 실패했습니다.");
         break;
       case ErrorType.POWER_FAILURE:
-        console.log("전원 또는 시스템 오류가 발생했습니다.");
+        Logger.error("전원 또는 시스템 오류가 발생했습니다.");
         break;
       case ErrorType.INVALID_STATE:
-        console.log("자판기가 예상치 못한 상태에 있습니다.");
+        Logger.error("자판기가 예상치 못한 상태에 있습니다.");
         break;
     }
-    console.log("관리자에게 문의해주세요.");
-    console.log("초기 화면으로 돌아가려면 아무 키나 입력하세요.");
+    Logger.error("관리자에게 문의해주세요.");
+    Logger.error("초기 화면으로 돌아가려면 아무 키나 입력하세요.");
   };
 
   handleUserInput = async (): Promise<void> => {

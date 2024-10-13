@@ -3,8 +3,8 @@ import { VendingMachine } from "./VendingMachine";
 
 const vendingMachine = new VendingMachine();
 
-console.log("자판기 시뮬레이터");
-console.log("명령어를 입력하세요. '종료'를 입력하면 프로그램이 종료됩니다.");
+Logger.log("자판기 시뮬레이터");
+Logger.log("명령어를 입력하세요. '종료'를 입력하면 프로그램이 종료됩니다.");
 
 vendingMachine.displayWaitingScreen();
 

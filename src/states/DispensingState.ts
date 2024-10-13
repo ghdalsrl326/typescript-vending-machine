@@ -10,8 +10,8 @@ export class DispensingState implements State {
   constructor(public vendingMachine: VendingMachine) {}
 
   displayOptions = async (): Promise<void> => {
-    console.log("===== 음료 제공 중 =====");
-    console.log("잠시만 기다려주세요...");
+    Logger.log("===== 음료 제공 중 =====");
+    Logger.log("잠시만 기다려주세요...");
     await this.dispenseDrink();
   };
 
@@ -73,9 +73,9 @@ export class DispensingState implements State {
     }
     Logger.log(`${totalChange}원의 거스름돈을 반환합니다.`);
     MoneyHandler.updateCashInventory(this.vendingMachine, change, true);
-    console.log("거스름돈 내역:");
+    Logger.log("거스름돈 내역:");
     for (const [denomination, count] of change.entries()) {
-      console.log(`${denomination}원: ${count}개`);
+      Logger.log(`${denomination}원: ${count}개`);
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return true;

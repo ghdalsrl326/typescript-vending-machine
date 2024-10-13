@@ -7,8 +7,8 @@ export class WaitingState implements State {
   constructor(public vendingMachine: VendingMachine) {}
 
   displayOptions = (): void => {
-    console.log("===== 자판기 대기 중 =====");
-    console.log("음료를 선택하려면 '음료'를 입력하세요.");
+    Logger.log("===== 자판기 대기 중 =====");
+    Logger.log("음료를 선택하려면 '음료'를 입력하세요.");
   };
 
   handleUserInput = async (input: string): Promise<void> => {
