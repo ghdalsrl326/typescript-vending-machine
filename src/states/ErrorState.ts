@@ -1,3 +1,4 @@
+// 예외처리 상태 클래스
 import { State } from "./State";
 import { VendingMachine } from "../VendingMachine";
 import { WaitingState } from "./WaitingState";
@@ -117,6 +118,5 @@ export class ErrorState implements State {
     Logger.log("시스템 상태를 초기화 중입니다...");
     await new Promise((resolve) => setTimeout(resolve, 2000));
     Logger.log("시스템 상태가 초기화되었습니다.");
-    // 여기에 필요한 추가 초기화 로직을 구현할 수 있습니다.
   };
 }
